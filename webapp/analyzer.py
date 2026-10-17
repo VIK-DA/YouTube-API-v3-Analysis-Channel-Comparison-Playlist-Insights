@@ -4,6 +4,8 @@ import re
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, CountVectorizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+import hinglish
+
 _vader = SentimentIntensityAnalyzer()
 # VADER is tuned for general social media; add criticism words that are common under YouTube videos
 _vader.lexicon.update({
@@ -11,6 +13,7 @@ _vader.lexicon.update({
     "loud": -0.8, "quiet": -0.5, "repetitive": -1.2, "dragged": -1.2, "unwatchable": -2.5,
     "underrated": 1.5, "goated": 2.0, "masterpiece": 2.5, "fire": 1.2,
 })
+hinglish.install(_vader)
 # "too long", "too loud" etc. are complaints even without a negative word
 TOO_PATTERN = re.compile(r"\btoo (long|short|loud|quiet|fast|slow|much|many|little|few|repetitive|basic)\b", re.IGNORECASE)
 
@@ -24,7 +27,8 @@ FILLER_WORDS = {
     "need", "does", "did", "let", "lot", "lots", "use", "used", "new", "good", "great", "best",
     "love", "loved", "nice", "amazing", "awesome", "thanks", "thank", "bad", "worst", "hate",
 }
-STOP_WORDS = list(ENGLISH_STOP_WORDS | FILLER_WORDS)
+STOP_WORDS = list(ENGLISH_STOP_WORDS | FILLER_WORDS | hinglish.HINGLISH_STOP_WORDS | hinglish.HINDI_STOP_WORDS
+                  | hinglish.OPINION_WORDS)
 
 VERDICTS = [(8.5, "Loved"), (6.5, "Mostly positive"), (4.5, "Mixed"), (2.5, "Mostly negative"), (0, "Hated")]
 
@@ -33,7 +37,7 @@ def score_sentiment(comments):
     """Label every comment positive/neutral/negative with VADER and return the counts."""
     counts = {"positive": 0, "neutral": 0, "negative": 0}
     for comment in comments:
-        compound = _vader.polarity_scores(comment["Text"])["compound"]
+        compound = _vader.polarity_scores(hinglish.normalize(comment["Text"]))["compound"]
         if TOO_PATTERN.search(comment["Text"]):
             compound -= 0.4
         if compound >= 0.05:
@@ -44,11 +48,19 @@ def score_sentiment(comments):
             label = "neutral"
         comment["Compound"] = compound
         comment["Sentiment"] = label
+        comment["Language"] = hinglish.detect_language(comment["Text"])
         counts[label] += 1
 
     total = len(comments) or 1
     percents = {k: round(v * 100 / total, 1) for k, v in counts.items()}
     return counts, percents
+
+
+def language_breakdown(comments):
+    """Share of comments written in English, Hindi and Hinglish (comments with only emoji are skipped)."""
+    labelled = [c["Language"] for c in comments if c.get("Language")]
+    total = len(labelled) or 1
+    return {lang: round(labelled.count(lang) * 100 / total, 1) for lang in ("English", "Hinglish", "Hindi")}
 
 
 def _weight(comment):
@@ -71,7 +83,7 @@ def _top_terms(texts, limit):
         return []
     vectorizer = CountVectorizer(
         stop_words=STOP_WORDS, ngram_range=(1, 2), min_df=2, binary=True,
-        token_pattern=r"(?u)\b[a-zA-Z][a-zA-Z']{2,}\b",
+        token_pattern=hinglish.TOKEN_PATTERN, preprocessor=lambda t: hinglish.normalize(t).lower(),
     )
     try:
         matrix = vectorizer.fit_transform(texts)
@@ -94,8 +106,10 @@ def _top_terms(texts, limit):
 
 
 def _comments_mentioning(comments, term):
-    pattern = re.compile(r"\b" + re.escape(term) + r"\b", re.IGNORECASE)
-    return [c for c in comments if pattern.search(c["Text"])]
+    # \b doesn't work for Devanagari (vowel signs aren't "word" characters), so check neighbours directly
+    edge = r"[A-Za-z0-9_\u0900-\u097F]"
+    pattern = re.compile(rf"(?<!{edge}){re.escape(term)}(?!{edge})", re.IGNORECASE)
+    return [c for c in comments if pattern.search(hinglish.normalize(c["Text"]))]
 
 
 def _short(text, limit=220):
@@ -120,7 +134,7 @@ def build_overview(comments, percents):
 
     positive = [c for c in comments if c["Sentiment"] == "positive"]
     negative = [c for c in comments if c["Sentiment"] == "negative"]
-    questions = [c for c in by_likes if "?" in c["Text"]]
+    questions = [c for c in by_likes if hinglish.is_question(c["Text"])]
 
     # Main themes: most-discussed phrases, with how people felt about each
     themes = []

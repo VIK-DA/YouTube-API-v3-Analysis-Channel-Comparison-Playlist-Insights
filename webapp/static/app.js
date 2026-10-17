@@ -48,6 +48,10 @@ function render(data) {
     legend.append(item);
   }
 
+  // Which languages the comments were written in
+  const langs = Object.entries(data.language_percents).filter(([, pct]) => pct > 0);
+  $("languages").textContent = "Languages: " + langs.map(([lang, pct]) => `${lang} ${pct}%`).join(" · ");
+
   // Example comments
   const examples = $("examples");
   examples.replaceChildren();

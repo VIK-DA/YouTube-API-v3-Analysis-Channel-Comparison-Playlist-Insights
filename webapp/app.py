@@ -5,7 +5,7 @@ import time
 from flask import Flask, jsonify, render_template, request
 from googleapiclient.errors import HttpError
 
-from analyzer import build_overview, score_sentiment
+from analyzer import build_overview, language_breakdown, score_sentiment
 from youtube_client import (
     YouTubeError,
     extract_video_id,
@@ -67,6 +67,7 @@ def analyze():
         comments_analyzed=len(comments),
         sentiment_counts=counts,
         sentiment_percents=percents,
+        language_percents=language_breakdown(comments),
         examples=examples,
         analysis=analysis,
     )
