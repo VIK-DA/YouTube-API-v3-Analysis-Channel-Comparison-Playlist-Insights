@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: archivarix-tube
+    runtime: python
+    plan: free
+    rootDir: webapp
+    buildCommand: pip install -r requirements.txt
+    # Fetching 500 comments takes a few seconds, so allow longer requests
+    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: YOUTUBE_API_KEY
+        sync: false
+      - key: MAX_COMMENTS
+        value: "500"

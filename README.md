@@ -59,6 +59,38 @@ To visualize the top 10 videos based on the number of views, use the `top_10_vid
 
 To visualize the number of views for videos from different years, use the `video_data` DataFrame. The function will display a bar plot showing the popularity of videos over the years.
 
+## Archivarix Tube website (`webapp/`)
+
+A website that analyses a video's comment section. Paste a YouTube link and it shows:
+
+- the video's views, likes and comment count
+- the share of positive, neutral and negative comments (VADER sentiment)
+- an overview built with Python libraries (no AI service or paid API): a 1-10 reception score
+  weighted by comment likes, a summary, how viewers interpreted the video, what they liked and disliked
+  (most-repeated phrases found with scikit-learn), main themes, questions, and notable comments
+- the most-liked comments for each sentiment
+
+It reuses the notebook's YouTube Data API v3 code to fetch video stats and comments (up to 500, most relevant first).
+
+### Run locally
+
+```bash
+cd webapp
+pip install -r requirements.txt
+export YOUTUBE_API_KEY=your-youtube-key
+python app.py   # open http://localhost:5000
+```
+
+### Deploy on Render
+
+1. On [render.com](https://render.com), click **New → Blueprint** and pick this repository. Render reads `render.yaml`.
+2. When asked, enter your `YOUTUBE_API_KEY`.
+3. Click **Apply**. The site URL appears on the service page once the build finishes.
+
+Never put the API key in the code or notebook; keep them in Render's environment variables.
+
+VADER sentiment works on English text, so comments in other languages mostly count as neutral.
+
 ## Contributing
 
 Contributions are welcome! If you have any suggestions or find any issues, feel free to create a pull request or open an issue.
