@@ -11,7 +11,6 @@ This data science project utilizes the YouTube API v3 to analyze and compare thr
 - [Data Retrieval](#data-retrieval)
 - [Data Visualization](#data-visualization)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Installation
 
@@ -94,7 +93,3 @@ VADER sentiment works on English text, so comments in other languages mostly cou
 ## Contributing
 
 Contributions are welcome! If you have any suggestions or find any issues, feel free to create a pull request or open an issue.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
