@@ -65,8 +65,9 @@ A website that analyses a video's comment section. Paste a YouTube link and it s
 
 - the video's views, likes and comment count
 - the share of positive, neutral and negative comments (VADER sentiment)
-- an AI overview from Claude: a 1-10 reception score, summary, how viewers interpreted the video,
-  what they liked and disliked, main themes, questions, and notable comments
+- an overview built with Python libraries (no AI service or paid API): a 1-10 reception score
+  weighted by comment likes, a summary, how viewers interpreted the video, what they liked and disliked
+  (most-repeated phrases found with scikit-learn), main themes, questions, and notable comments
 - the most-liked comments for each sentiment
 
 It reuses the notebook's YouTube Data API v3 code to fetch video stats and comments (up to 500, most relevant first).
@@ -77,17 +78,18 @@ It reuses the notebook's YouTube Data API v3 code to fetch video stats and comme
 cd webapp
 pip install -r requirements.txt
 export YOUTUBE_API_KEY=your-youtube-key
-export ANTHROPIC_API_KEY=your-anthropic-key   # optional: without it you only get the sentiment numbers
 python app.py   # open http://localhost:5000
 ```
 
 ### Deploy on Render
 
 1. On [render.com](https://render.com), click **New → Blueprint** and pick this repository. Render reads `render.yaml`.
-2. When asked, enter `YOUTUBE_API_KEY` and `ANTHROPIC_API_KEY`.
+2. When asked, enter your `YOUTUBE_API_KEY`.
 3. Click **Apply**. The site URL appears on the service page once the build finishes.
 
-Never put API keys in the code or notebook; keep them in Render's environment variables.
+Never put the API key in the code or notebook; keep them in Render's environment variables.
+
+VADER sentiment works on English text, so comments in other languages mostly count as neutral.
 
 ## Contributing
 

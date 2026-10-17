@@ -2,11 +2,10 @@ import logging
 import os
 import time
 
-import anthropic
 from flask import Flask, jsonify, render_template, request
 from googleapiclient.errors import HttpError
 
-from analyzer import score_sentiment, summarize_with_claude
+from analyzer import build_overview, score_sentiment
 from youtube_client import (
     YouTubeError,
     extract_video_id,
@@ -21,7 +20,7 @@ CACHE_SECONDS = 60 * 60
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# Results per video ID, so repeat lookups don't spend YouTube quota or Claude credits
+# Results per video ID, so repeat lookups don't spend YouTube API quota
 _cache = {}
 
 
@@ -57,14 +56,7 @@ def analyze():
 
     counts, percents = score_sentiment(comments)
 
-    analysis, analysis_error = None, None
-    try:
-        analysis = summarize_with_claude(video, comments, percents)
-        if analysis is None:
-            analysis_error = "ANTHROPIC_API_KEY is not set, so only the sentiment numbers are shown."
-    except (anthropic.APIError, RuntimeError) as e:
-        app.logger.exception("Claude analysis failed")
-        analysis_error = f"The AI overview failed: {e}"
+    analysis = build_overview(comments, percents)
 
     # Most-liked comments for each sentiment, so the page can show real examples
     top = sorted(comments, key=lambda c: c["Likes"], reverse=True)
@@ -77,10 +69,8 @@ def analyze():
         sentiment_percents=percents,
         examples=examples,
         analysis=analysis,
-        analysis_error=analysis_error,
     )
-    if analysis:
-        _cache[video_id] = (time.time(), result)
+    _cache[video_id] = (time.time(), result)
     return jsonify(result)
 
 

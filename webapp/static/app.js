@@ -67,8 +67,6 @@ function render(data) {
   const a = data.analysis;
   $("verdict-card").hidden = !a;
   $("ai").hidden = !a;
-  $("analysis-error").hidden = !data.analysis_error;
-  $("analysis-error").textContent = data.analysis_error || "";
 
   if (a) {
     $("score").textContent = a.score;
@@ -83,6 +81,7 @@ function render(data) {
 
     const themes = $("themes");
     themes.replaceChildren();
+    $("themes-card").hidden = !a.themes.length;
     a.themes.forEach((t) => {
       const box = el("div", "theme");
       const head = el("div", "theme-head");
@@ -108,7 +107,7 @@ $("form").addEventListener("submit", async (event) => {
   const button = $("go");
   button.disabled = true;
   $("results").hidden = true;
-  showStatus("Fetching comments and analysing… this can take up to a minute.");
+  showStatus("Fetching and analysing comments…");
   try {
     const res = await fetch("/api/analyze", {
       method: "POST",
