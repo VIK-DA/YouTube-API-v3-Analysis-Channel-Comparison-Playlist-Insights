@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: youtube-comment-pulse
+    name: archivarix-tube
     runtime: python
     plan: free
     rootDir: webapp

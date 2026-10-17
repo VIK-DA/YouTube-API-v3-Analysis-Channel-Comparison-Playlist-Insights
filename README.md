@@ -59,7 +59,7 @@ To visualize the top 10 videos based on the number of views, use the `top_10_vid
 
 To visualize the number of views for videos from different years, use the `video_data` DataFrame. The function will display a bar plot showing the popularity of videos over the years.
 
-## Comment Pulse website (`webapp/`)
+## Archivarix Tube website (`webapp/`)
 
 A website that analyses a video's comment section. Paste a YouTube link and it shows:
 
