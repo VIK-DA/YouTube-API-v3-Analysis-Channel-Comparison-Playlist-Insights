@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comment Pulse</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Comment Pulse</h1>
+      <p class="sub">Paste a YouTube video link to see how viewers reacted, what they liked and disliked, and how they interpreted it.</p>
+      <form id="form">
+        <input id="url" type="text" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" required>
+        <button id="go" type="submit">Analyse</button>
+      </form>
+      <p id="status" class="status" hidden></p>
+    </header>
+
+    <section id="results" hidden>
+      <div class="card video">
+        <img id="thumb" alt="">
+        <div>
+          <h2 id="title"></h2>
+          <p id="channel" class="muted"></p>
+          <div class="stats">
+            <div><span id="views"></span><small>views</small></div>
+            <div><span id="likes"></span><small>likes</small></div>
+            <div><span id="ncomments"></span><small>comments</small></div>
+            <div><span id="analyzed"></span><small>analysed</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="verdict-card" class="card verdict" hidden>
+        <div class="score"><span id="score"></span><small>/10</small></div>
+        <div>
+          <p id="verdict" class="verdict-label"></p>
+          <h3 id="headline"></h3>
+          <p id="summary"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Sentiment</h3>
+        <div class="bar" id="bar" role="img"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <p id="analysis-error" class="status warn" hidden></p>
+
+      <div id="ai" hidden>
+        <div class="card">
+          <h3>How people interpreted it</h3>
+          <p id="interpretation"></p>
+        </div>
+        <div class="grid">
+          <div class="card"><h3 class="pos">What people liked</h3><ul id="liked"></ul></div>
+          <div class="card"><h3 class="neg">What people disliked</h3><ul id="disliked"></ul></div>
+        </div>
+        <div class="card">
+          <h3>Main themes</h3>
+          <div id="themes" class="themes"></div>
+        </div>
+        <div class="card" id="questions-card">
+          <h3>Questions &amp; confusion</h3>
+          <ul id="questions"></ul>
+        </div>
+        <div class="card">
+          <h3>Notable comments</h3>
+          <div id="notable"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Most-liked comments by sentiment</h3>
+        <div id="examples" class="grid3"></div>
+      </div>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

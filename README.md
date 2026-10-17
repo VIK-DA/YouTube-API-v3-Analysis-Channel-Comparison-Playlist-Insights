@@ -59,6 +59,36 @@ To visualize the top 10 videos based on the number of views, use the `top_10_vid
 
 To visualize the number of views for videos from different years, use the `video_data` DataFrame. The function will display a bar plot showing the popularity of videos over the years.
 
+## Comment Pulse website (`webapp/`)
+
+A website that analyses a video's comment section. Paste a YouTube link and it shows:
+
+- the video's views, likes and comment count
+- the share of positive, neutral and negative comments (VADER sentiment)
+- an AI overview from Claude: a 1-10 reception score, summary, how viewers interpreted the video,
+  what they liked and disliked, main themes, questions, and notable comments
+- the most-liked comments for each sentiment
+
+It reuses the notebook's YouTube Data API v3 code to fetch video stats and comments (up to 500, most relevant first).
+
+### Run locally
+
+```bash
+cd webapp
+pip install -r requirements.txt
+export YOUTUBE_API_KEY=your-youtube-key
+export ANTHROPIC_API_KEY=your-anthropic-key   # optional: without it you only get the sentiment numbers
+python app.py   # open http://localhost:5000
+```
+
+### Deploy on Render
+
+1. On [render.com](https://render.com), click **New → Blueprint** and pick this repository. Render reads `render.yaml`.
+2. When asked, enter `YOUTUBE_API_KEY` and `ANTHROPIC_API_KEY`.
+3. Click **Apply**. The site URL appears on the service page once the build finishes.
+
+Never put API keys in the code or notebook; keep them in Render's environment variables.
+
 ## Contributing
 
 Contributions are welcome! If you have any suggestions or find any issues, feel free to create a pull request or open an issue.
