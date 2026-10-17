@@ -88,7 +88,7 @@ python app.py   # open http://localhost:5000
 
 Never put the API key in the code or notebook; keep them in Render's environment variables.
 
-VADER sentiment works on English text, so comments in other languages mostly count as neutral.
+Comments in English, Hindi (Devanagari) and Hinglish (Hindi typed in Roman letters, often mixed with English) are understood: `webapp/hinglish.py` adds Hindi/Hinglish sentiment words such as *badhiya*, *bakwas*, *शानदार* and *बेकार*, intensifiers like *bahut*/*बहुत*, and Hindi negation (*accha nahi* = not good). The page also shows what share of comments is in each language. Comments in other languages mostly count as neutral.
 
 ## Contributing
 

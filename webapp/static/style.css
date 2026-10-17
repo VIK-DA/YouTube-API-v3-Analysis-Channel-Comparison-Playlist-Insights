@@ -88,6 +88,7 @@ button:disabled { opacity: .6; cursor: wait; }
 .seg.negative, .dot.negative { background: var(--neg); }
 .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; color: var(--muted); font-size: .9rem; }
 .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.languages { margin: 10px 0 0; font-size: .9rem; }
 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .pos { color: var(--pos); }
 .neg { color: var(--neg); }
