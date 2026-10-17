@@ -86,9 +86,46 @@ python app.py   # open http://localhost:5000
 2. When asked, enter your `YOUTUBE_API_KEY`.
 3. Click **Apply**. The site URL appears on the service page once the build finishes.
 
-Never put the API key in the code or notebook; keep them in Render's environment variables.
+Never put the API key in the code or notebook; keep it in Render's environment variables.
 
-Comments in English, Hindi (Devanagari) and Hinglish (Hindi typed in Roman letters, often mixed with English) are understood: `webapp/hinglish.py` adds Hindi/Hinglish sentiment words such as *badhiya*, *bakwas*, *शानदार* and *बेकार*, intensifiers like *bahut*/*बहुत*, and Hindi negation (*accha nahi* = not good). The page also shows what share of comments is in each language. Comments in other languages mostly count as neutral.
+### Languages
+
+Comments in English, Hindi (Devanagari) and Hinglish (Hindi typed in Roman letters, often mixed with
+English) are understood. `webapp/hinglish.py` adds:
+
+- Hindi/Hinglish sentiment words in both scripts, e.g. *badhiya*, *mast*, *bakwas*, *ghatiya*, *शानदार*, *बेकार*
+- intensifiers such as *bahut*, *ekdum* and *बहुत* ("bahut accha" scores higher than "accha")
+- Hindi negation, which comes after the word: *accha nahi*, *अच्छा नहीं* = not good
+- Hindi question words (*kaise*, *kab*, *kyun*, *कैसे*, *क्यों*), so questions are found even without a "?"
+- Hindi/Hinglish grammar words (*hai*, *bhai*, *के*, *है*) are skipped when finding topics
+
+The page shows what share of comments is in English, Hindi and Hinglish.
+
+### Limitations
+
+- **Word-list based, not AI.** Sentiment comes from VADER plus a list of about 150 Hindi/Hinglish words.
+  Unusual slang or creative spellings (*bdhiyaaa*) aren't recognised and count as neutral.
+- **No sarcasm.** "wah kya video hai 🙄" or "great, another ad" read as positive.
+- **Other languages** (Tamil, Bengali, Spanish, …) mostly count as neutral.
+- **Same topic in two scripts counts twice**: "editing" and "एडिटिंग" appear as separate themes.
+- **Template summaries.** The summary and "how people interpreted it" text is built from the numbers and
+  most-repeated phrases, so it can say *what* people discuss and how they feel, not *why*.
+- **Up to 500 comments** (most relevant first) are analysed, and replies to comments are not included.
+- **Small comment sections** give rough results: themes need a phrase to appear in at least 2 comments.
+- **YouTube API quota**: the free key allows about 10,000 units a day; each analysis uses roughly 6–7.
+  Results are cached for an hour per video, but the cache resets when the server restarts.
+- **Render free plan** sleeps after about 15 minutes without visitors, so the first load can take up to a minute.
+
+### Changelog
+
+- **Hindi & Hinglish support**: sentiment, negation, questions and topics now work for Hindi and Hinglish
+  comments; added a language breakdown to the page.
+- **Renamed** the website to Archivarix Tube.
+- **Local analysis instead of an AI API**: replaced the Claude API with free Python libraries
+  (VADER and scikit-learn), so the site only needs a YouTube API key and costs nothing to run.
+- **First version**: Flask website that fetches a video's stats and comments with the YouTube Data API,
+  scores sentiment and shows themes, likes, dislikes, questions and notable comments. Deployable on
+  Render with `render.yaml`.
 
 ## Contributing
 
